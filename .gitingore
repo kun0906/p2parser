@@ -1,1 +1,6 @@
 *.pcap
+__pycache__/
+pyod.egg-info/
+.cache/
+.pytest_cache
+__pycache__

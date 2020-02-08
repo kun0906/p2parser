@@ -26,7 +26,7 @@ requirement_file = pth.join(current_dir, 'requirements.txt')
 def get_content(file_name=''):
     with open(file_name, mode='r') as f:
         values = f.readlines()
-    print(values)
+    # print(values)
     return values
 
 setup(
@@ -38,7 +38,7 @@ setup(
     author='Kun',
     author_email='kun.bj@outlook.com',
     url='https://github.com/Learn-Live',
-    download_url='https://github.com/Learn-Live',
+    download_url='https://github.com/Learn-Live/p2parser',
     keywords=['network traffic analysis', 'flow/subflow', 'pcap'],
     packages=find_packages(exclude=['test']),
     include_package_data=True,
