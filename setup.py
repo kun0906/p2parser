@@ -1,7 +1,8 @@
 from setuptools import find_packages, setup
-from os import path as pthgit
+from os import path as pth
 # from tools.setup_helpers.cmake import CMake
 
+# check if the python version is python2.x
 try:
     FileNotFoundError
 except NameError:
