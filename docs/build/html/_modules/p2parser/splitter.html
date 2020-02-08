@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>p2parser.splitter &mdash; p2parser 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> p2parser
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">p2parser</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>p2parser.splitter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for p2parser.splitter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># File from pcap-splitter project</span>
+<span class="c1"># Copyright (C) 2019 Santiago Hernandez Ramos &lt;shramos@protonmail.com&gt;</span>
+<span class="c1"># For more information about the project: https://github.com/shramos/pcap-splitter</span>
+
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+
+<div class="viewcode-block" id="PcapSplitter"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter">[docs]</a><span class="k">class</span> <span class="nc">PcapSplitter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Split a .pcap file into different files.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcap_path</span><span class="p">,</span> <span class="n">exefile_path</span><span class="o">=</span><span class="s2">&quot;PcapSplitter&quot;</span><span class="p">):</span>
+        <span class="c1"># Checks if the PcapSplitter executable exists in path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_binary</span><span class="p">(</span><span class="n">exefile_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span> <span class="o">=</span> <span class="n">exefile_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span> <span class="o">=</span> <span class="n">pcap_path</span>
+
+<div class="viewcode-block" id="PcapSplitter.split_by_size"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter.split_by_size">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size_bytes</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Split files by size in bytes.&quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span>
+                <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;file-size&quot;</span><span class="p">,</span> <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">size_bytes</span><span class="p">),</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="p">)</span>
+        <span class="c1"># Execute the PcapSplitter binary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PcapSplitter.split_by_count"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter.split_by_count">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count_pkts</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Split files by packet count.&quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span>
+                <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;packet-count&quot;</span><span class="p">,</span> <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">count_pkts</span><span class="p">),</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="p">)</span>
+        <span class="c1"># Execute the PcapSplitter binary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PcapSplitter.split_by_client_ip"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter.split_by_client_ip">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_client_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;split files by client IP, meaning all connections with the same client</span>
+<span class="sd">        IP will be in the same file.&quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span>
+                <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;client-ip&quot;</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="p">)</span>
+        <span class="c1"># Execute the PcapSplitter binary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PcapSplitter.split_by_server_ip"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter.split_by_server_ip">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_server_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;split files by server IP, meaning all connections with the same server</span>
+<span class="sd">        IP will be in the same file.&quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span>
+                <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;server-ip&quot;</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="p">)</span>
+        <span class="c1"># Execute the PcapSplitter binary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PcapSplitter.split_by_server_port"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter.split_by_server_port">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_server_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;split files by IP src and dst (2-tuple), meaning all connections with</span>
+<span class="sd">        the same IPs will be in the same file.&quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span>
+                <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;server-port&quot;</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="p">)</span>
+        <span class="c1"># Execute the PcapSplitter binary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PcapSplitter.split_by_ip_src_dst"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter.split_by_ip_src_dst">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_ip_src_dst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;split files by IP src and dst (2-tuple), meaning all connections with</span>
+<span class="sd">        the same IPs will be in the same file.&quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span>
+                <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;ip-src-dst&quot;</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="p">)</span>
+        <span class="c1"># Execute the PcapSplitter binary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PcapSplitter.split_by_session"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter.split_by_session">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;split files by connection (5-tuple), meaning all packets of a</span>
+<span class="sd">        connection will be in the same file.&quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span>
+                <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="p">)</span>
+        <span class="c1"># Execute the PcapSplitter binary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PcapSplitter.split_by_filter"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter.split_by_filter">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bpf_filter</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;split file into two files: one that contains all packets matching the</span>
+<span class="sd">        given BPF filter (file #0) and one that contains the rest of the packets</span>
+<span class="sd">        (file #1).&quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span>
+                <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;bpf-filter&quot;</span><span class="p">,</span> <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="n">bpf_filter</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="p">)</span>
+        <span class="c1"># Execute the PcapSplitter binary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PcapSplitter.split_by_round_robin"><a class="viewcode-back" href="../../p2parser.html#p2parser.splitter.PcapSplitter.split_by_round_robin">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_round_robin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_files</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;split the file in a round-robin manner - each packet to a different</span>
+<span class="sd">        file.&quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exefile_path</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcap_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">,</span>
+                <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;round-robin&quot;</span><span class="p">,</span> <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_files</span><span class="p">),</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">pkts_bpf_filter</span><span class="p">)</span>
+        <span class="c1"># Execute the PcapSplitter binary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">popen</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="n">popen</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">popen</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_check_binary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exefile_path</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">exefile_path</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: PcapSplitter executable not found in the OS. Please </span><span class="se">\</span>
+<span class="s2">            check that PcapPlusPlus is correctly installed and PcapSplitter </span><span class="se">\</span>
+<span class="s2">            executable is in the path, or indicate the path of the PcapSplitter </span><span class="se">\</span>
+<span class="s2">            executable by using the exefile_path parameter when instantiating </span><span class="se">\</span>
+<span class="s2">            the PcapSplitter class.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, kun
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

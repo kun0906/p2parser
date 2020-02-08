@@ -1,0 +1,22 @@
+Metadata-Version: 2.1
+Name: p2parser
+Version: 0.0.1.1
+Summary: A python toolkit for pcap parser
+Home-page: https://github.com/Learn-Live
+Author: Kun
+Author-email: kun.bj@outlook.com
+License: UNKNOWN
+Download-URL: https://github.com/Learn-Live
+Description: UNKNOWN
+Keywords: network traffic analysis,flow/subflow,pcap
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Financial and Insurance Industry
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Description-Content-Type: text/x-md

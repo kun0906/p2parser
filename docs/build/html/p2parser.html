@@ -1,0 +1,272 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>p2parser package &mdash; p2parser 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> p2parser
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">p2parser package</a><ul>
+<li><a class="reference internal" href="#module-p2parser.splitter">Submodules</a></li>
+<li><a class="reference internal" href="#module-p2parser">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">p2parser</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>p2parser package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/p2parser.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="p2parser-package">
+<h1>p2parser package<a class="headerlink" href="#p2parser-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-p2parser.splitter">
+<span id="submodules"></span><h2>Submodules<a class="headerlink" href="#module-p2parser.splitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="p2parser.splitter.PcapSplitter">
+<em class="property">class </em><code class="sig-prename descclassname">p2parser.splitter.</code><code class="sig-name descname">PcapSplitter</code><span class="sig-paren">(</span><em class="sig-param">pcap_path</em>, <em class="sig-param">exefile_path='PcapSplitter'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Split a .pcap file into different files.</p>
+<dl class="method">
+<dt id="p2parser.splitter.PcapSplitter.split_by_client_ip">
+<code class="sig-name descname">split_by_client_ip</code><span class="sig-paren">(</span><em class="sig-param">dest_path</em>, <em class="sig-param">pkts_bpf_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter.split_by_client_ip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter.split_by_client_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>split files by client IP, meaning all connections with the same client
+IP will be in the same file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="p2parser.splitter.PcapSplitter.split_by_count">
+<code class="sig-name descname">split_by_count</code><span class="sig-paren">(</span><em class="sig-param">count_pkts</em>, <em class="sig-param">dest_path</em>, <em class="sig-param">pkts_bpf_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter.split_by_count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter.split_by_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split files by packet count.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="p2parser.splitter.PcapSplitter.split_by_filter">
+<code class="sig-name descname">split_by_filter</code><span class="sig-paren">(</span><em class="sig-param">bpf_filter</em>, <em class="sig-param">dest_path</em>, <em class="sig-param">pkts_bpf_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter.split_by_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter.split_by_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>split file into two files: one that contains all packets matching the
+given BPF filter (file #0) and one that contains the rest of the packets
+(file #1).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="p2parser.splitter.PcapSplitter.split_by_ip_src_dst">
+<code class="sig-name descname">split_by_ip_src_dst</code><span class="sig-paren">(</span><em class="sig-param">dest_path</em>, <em class="sig-param">pkts_bpf_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter.split_by_ip_src_dst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter.split_by_ip_src_dst" title="Permalink to this definition">¶</a></dt>
+<dd><p>split files by IP src and dst (2-tuple), meaning all connections with
+the same IPs will be in the same file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="p2parser.splitter.PcapSplitter.split_by_round_robin">
+<code class="sig-name descname">split_by_round_robin</code><span class="sig-paren">(</span><em class="sig-param">n_files</em>, <em class="sig-param">dest_path</em>, <em class="sig-param">pkts_bpf_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter.split_by_round_robin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter.split_by_round_robin" title="Permalink to this definition">¶</a></dt>
+<dd><p>split the file in a round-robin manner - each packet to a different
+file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="p2parser.splitter.PcapSplitter.split_by_server_ip">
+<code class="sig-name descname">split_by_server_ip</code><span class="sig-paren">(</span><em class="sig-param">dest_path</em>, <em class="sig-param">pkts_bpf_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter.split_by_server_ip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter.split_by_server_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>split files by server IP, meaning all connections with the same server
+IP will be in the same file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="p2parser.splitter.PcapSplitter.split_by_server_port">
+<code class="sig-name descname">split_by_server_port</code><span class="sig-paren">(</span><em class="sig-param">dest_path</em>, <em class="sig-param">pkts_bpf_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter.split_by_server_port"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter.split_by_server_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>split files by IP src and dst (2-tuple), meaning all connections with
+the same IPs will be in the same file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="p2parser.splitter.PcapSplitter.split_by_session">
+<code class="sig-name descname">split_by_session</code><span class="sig-paren">(</span><em class="sig-param">dest_path</em>, <em class="sig-param">pkts_bpf_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter.split_by_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter.split_by_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>split files by connection (5-tuple), meaning all packets of a
+connection will be in the same file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="p2parser.splitter.PcapSplitter.split_by_size">
+<code class="sig-name descname">split_by_size</code><span class="sig-paren">(</span><em class="sig-param">size_bytes</em>, <em class="sig-param">dest_path</em>, <em class="sig-param">pkts_bpf_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/p2parser/splitter.html#PcapSplitter.split_by_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#p2parser.splitter.PcapSplitter.split_by_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split files by size in bytes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-p2parser.version"></span><p><code class="docutils literal notranslate"><span class="pre">p2parser</span></code> is a python toolbox for pcap parser</p>
+</div>
+<div class="section" id="module-p2parser">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-p2parser" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, kun
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

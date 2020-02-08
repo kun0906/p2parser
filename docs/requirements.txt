@@ -3,3 +3,4 @@ sphinx
 sphinxcontrib.katex
 matplotlib
 javasphinx
+pip3 install sphinx_rtd_theme
