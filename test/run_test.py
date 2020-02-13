@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 
 from __future__ import print_function
 
@@ -11,127 +11,20 @@ import subprocess
 import sys
 import tempfile
 
-import torch
-import torch._six
-from torch.utils import cpp_extension
-from torch.testing._internal.common_utils import TEST_WITH_ROCM, shell
-import torch.distributed as dist
+from test import test_utils
+
 PY33 = sys.version_info >= (3, 3)
 PY36 = sys.version_info >= (3, 6)
 
 TESTS = [
-    'test_autograd',
-    'test_cpp_extensions_aot',
-    'test_cpp_extensions_aot_no_ninja',
-    'test_cpp_extensions_jit',
-    'distributed/test_c10d',
-    'distributed/test_c10d_spawn',
-    'test_cuda',
-    'test_cuda_primary_ctx',
-    'test_dataloader',
-    'distributed/test_data_parallel',
-    'distributed/test_distributed',
-    'test_distributions',
-    'test_docs_coverage',
-    'test_expecttest',
-    'test_fake_quant',
-    'test_indexing',
-    'test_jit',
-    'test_logging',
-    'test_mkldnn',
-    'test_multiprocessing',
-    'test_multiprocessing_spawn',
-    'distributed/test_nccl',
-    'test_nn',
-    'test_numba_integration',
-    'test_optim',
-    'test_qat',
-    'test_quantization',
-    'test_quantized',
-    'test_quantized_tensor',
-    'test_quantized_nn_mods',
-    'test_sparse',
-    'test_serialization',
-    'test_torch',
-    'test_type_info',
-    'test_type_hints',
-    'test_utils',
-    'test_namedtuple_return_api',
-    'test_jit_fuser',
-    'test_jit_simple',
-    'test_jit_legacy',
-    'test_jit_fuser_legacy',
-    'test_tensorboard',
-    'test_namedtensor',
-    'test_type_promotion',
-    'test_jit_disabled',
-    'test_function_schema',
-    'test_overrides',
+    'test_version',
+    'data/test_xxx',
+
 ]
-
-# skip < 3.3 because mock is added in 3.3 and is used in rpc_spawn
-# skip python2 for rpc and dist_autograd tests that do not support python2
-if PY33:
-    TESTS.extend([
-        'distributed/rpc/test_rpc_spawn',
-        'distributed/rpc/test_dist_autograd_spawn',
-        'distributed/rpc/test_dist_optimizer_spawn',
-    ])
-
-# skip < 3.6 b/c fstrings added in 3.6
-if PY36:
-    TESTS.extend([
-        'test_jit_py3',
-    ])
-
-WINDOWS_BLACKLIST = [
-    'distributed/test_distributed',
-    'distributed/rpc/test_rpc_spawn',
-    'distributed/rpc/test_dist_autograd_spawn',
-    'distributed/rpc/test_dist_optimizer_spawn',
-]
-
-ROCM_BLACKLIST = [
-    'test_cpp_extensions_aot',
-    'test_cpp_extensions_aot_no_ninja',
-    'test_cpp_extensions_jit',
-    'distributed/test_distributed',
-    'test_multiprocessing',
-    'distributed/rpc/test_rpc_spawn',
-    'distributed/rpc/test_dist_autograd_spawn',
-]
-
-DISTRIBUTED_TESTS_CONFIG = {}
-
-
-if dist.is_available():
-    if dist.is_mpi_available():
-        DISTRIBUTED_TESTS_CONFIG['mpi'] = {
-            'WORLD_SIZE': '3',
-            'TEST_REPORT_SOURCE_OVERRIDE': 'dist-mpi'
-        }
-    if dist.is_nccl_available():
-        DISTRIBUTED_TESTS_CONFIG['nccl'] = {
-            'WORLD_SIZE': '2' if torch.cuda.device_count() == 2 else '3',
-            'TEST_REPORT_SOURCE_OVERRIDE': 'dist-nccl'
-        }
-    if dist.is_gloo_available():
-        DISTRIBUTED_TESTS_CONFIG['gloo'] = {
-            'WORLD_SIZE': '2' if torch.cuda.device_count() == 2 else '3',
-            'TEST_REPORT_SOURCE_OVERRIDE': 'dist-gloo'
-        }
 
 # https://stackoverflow.com/questions/2549939/get-signal-names-from-numbers-in-python
 SIGNALS_TO_NAMES_DICT = {getattr(signal, n): n for n in dir(signal)
                          if n.startswith('SIG') and '_' not in n}
-
-CPP_EXTENSIONS_ERROR = """
-Ninja (https://ninja-build.org) is required for some of the C++ extensions
-tests, but it could not be found. Install ninja with `pip install ninja`
-or `conda install ninja`. Alternatively, disable said tests with
-`run_test.py --exclude test_cpp_extensions_aot test_cpp_extensions_jit`.
-"""
-
 
 def print_to_stderr(message):
     print(message, file=sys.stderr)
@@ -153,120 +46,6 @@ def test_cuda_primary_ctx(executable, test_module, test_directory, options):
     return run_test(executable, test_module, test_directory, options, '--subprocess')
 
 
-def _test_cpp_extensions_aot(executable, test_module, test_directory, options, use_ninja):
-    if use_ninja:
-        try:
-            cpp_extension.verify_ninja_availability()
-        except RuntimeError:
-            print(CPP_EXTENSIONS_ERROR)
-            return 1
-
-    # Wipe the build folder, if it exists already
-    cpp_extensions_test_dir = os.path.join(test_directory, 'cpp_extensions')
-    cpp_extensions_test_build_dir = os.path.join(cpp_extensions_test_dir, 'build')
-    if os.path.exists(cpp_extensions_test_build_dir):
-        shutil.rmtree(cpp_extensions_test_build_dir)
-
-    # Build the test cpp extensions modules
-    shell_env = os.environ.copy()
-    shell_env['USE_NINJA'] = str(1 if use_ninja else 0)
-    cmd = [sys.executable, 'setup.py', 'install', '--root', './install']
-    return_code = shell(cmd, cwd=cpp_extensions_test_dir, env=shell_env)
-    if return_code != 0:
-        return return_code
-    if sys.platform != 'win32':
-        return_code = shell(cmd,
-                            cwd=os.path.join(cpp_extensions_test_dir, 'no_python_abi_suffix_test'),
-                            env=shell_env)
-        if return_code != 0:
-            return return_code
-
-    # "install" the test modules and run tests
-    python_path = os.environ.get('PYTHONPATH', '')
-    try:
-        cpp_extensions = os.path.join(test_directory, 'cpp_extensions')
-        install_directory = ''
-        # install directory is the one that is named site-packages
-        for root, directories, _ in os.walk(os.path.join(cpp_extensions, 'install')):
-            for directory in directories:
-                if '-packages' in directory:
-                    install_directory = os.path.join(root, directory)
-
-        assert install_directory, 'install_directory must not be empty'
-        os.environ['PYTHONPATH'] = os.pathsep.join([install_directory, python_path])
-        return run_test(executable, test_module, test_directory, options)
-    finally:
-        os.environ['PYTHONPATH'] = python_path
-
-
-def test_cpp_extensions_aot(executable, test_module, test_directory, options):
-    return _test_cpp_extensions_aot(executable, test_module, test_directory,
-                                    options, use_ninja=True)
-
-
-def test_cpp_extensions_aot_no_ninja(executable, test_module, test_directory, options):
-    return _test_cpp_extensions_aot(executable, 'test_cpp_extensions_aot',
-                                    test_directory, options, use_ninja=False)
-
-
-def test_distributed(executable, test_module, test_directory, options):
-    mpi_available = subprocess.call('command -v mpiexec', shell=True) == 0
-    if options.verbose and not mpi_available:
-        print_to_stderr(
-            'MPI not available -- MPI backend tests will be skipped')
-    config = DISTRIBUTED_TESTS_CONFIG
-    for backend, env_vars in config.items():
-        if backend == 'mpi' and not mpi_available:
-            continue
-        for with_init_file in {True, False}:
-            tmp_dir = tempfile.mkdtemp()
-            if options.verbose:
-                with_init = ' with file init_method' if with_init_file else ''
-                print_to_stderr(
-                    'Running distributed tests for the {} backend{}'.format(
-                        backend, with_init))
-            os.environ['TEMP_DIR'] = tmp_dir
-            os.environ['BACKEND'] = backend
-            os.environ['INIT_METHOD'] = 'env://'
-            os.environ.update(env_vars)
-            if with_init_file:
-                if test_module == "test_distributed":
-                    init_method = 'file://{}/'.format(tmp_dir)
-                else:
-                    init_method = 'file://{}/shared_init_file'.format(tmp_dir)
-                os.environ['INIT_METHOD'] = init_method
-            try:
-                os.mkdir(os.path.join(tmp_dir, 'barrier'))
-                os.mkdir(os.path.join(tmp_dir, 'test_dir'))
-                if backend == 'mpi':
-                    # test mpiexec for --noprefix option
-                    with open(os.devnull, 'w') as devnull:
-                        noprefix_opt = '--noprefix' if subprocess.call(
-                            'mpiexec -n 1 --noprefix bash -c ""', shell=True,
-                            stdout=devnull, stderr=subprocess.STDOUT) == 0 else ''
-
-                    mpiexec = ['mpiexec', '-n', '3', noprefix_opt] + executable
-
-                    return_code = run_test(mpiexec, test_module,
-                                           test_directory, options)
-                else:
-                    return_code = run_test(executable, test_module, test_directory,
-                                           options)
-                if return_code != 0:
-                    return return_code
-            finally:
-                shutil.rmtree(tmp_dir)
-    return 0
-
-
-CUSTOM_HANDLERS = {
-    'test_cuda_primary_ctx': test_cuda_primary_ctx,
-    'test_cpp_extensions_aot': test_cpp_extensions_aot,
-    'test_cpp_extensions_aot_no_ninja': test_cpp_extensions_aot_no_ninja,
-    'distributed/test_distributed': test_distributed,
-}
-
-
 def parse_test_module(test):
     return test.split('.')[0]
 
@@ -281,7 +60,7 @@ class TestChoices(list):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='Run the PyTorch unit test suite',
+        description='Run the p2parser unit test suite',
         epilog='where TESTS is any of: {}'.format(', '.join(TESTS)))
     parser.add_argument(
         '-v',
@@ -398,6 +177,36 @@ def find_test_index(test, selected_tests, find_last_index=False):
     return found_idx
 
 
+def shell(command, cwd=None, env=None):
+    sys.stdout.flush()
+    sys.stderr.flush()
+    # The following cool snippet is copied from Py3 core library subprocess.call
+    # only the with
+    #   1. `except KeyboardInterrupt` block added for SIGINT handling.
+    #   2. In Py2, subprocess.Popen doesn't return a context manager, so we do
+    #      `p.wait()` in a `final` block for the code to be portable.
+    #
+    # https://github.com/python/cpython/blob/71b6c1af727fbe13525fb734568057d78cea33f3/Lib/subprocess.py#L309-L323
+    assert not isinstance(command, torch._six.string_classes), "Command to shell should be a list or tuple of tokens"
+    p = subprocess.Popen(command, universal_newlines=True, cwd=cwd, env=env)
+    try:
+        return p.wait()
+    except KeyboardInterrupt:
+        # Give `p` a chance to handle KeyboardInterrupt. Without this,
+        # `pytest` can't print errors it collected so far upon KeyboardInterrupt.
+        exit_status = p.wait(timeout=5)
+        if exit_status is not None:
+            return exit_status
+        else:
+            p.kill()
+            raise
+    except:  # noqa E722, copied from python core library
+        p.kill()
+        raise
+    finally:
+        # Always call p.wait() to ensure exit
+        p.wait()
+
 def exclude_tests(exclude_list, selected_tests, exclude_message=None):
     for exclude_test in exclude_list:
         tests_copy = selected_tests[:]
@@ -427,21 +236,16 @@ def get_selected_tests(options):
 
     selected_tests = exclude_tests(options.exclude, selected_tests)
 
-    if sys.platform == 'win32' and not options.ignore_win_blacklist:
-        target_arch = os.environ.get('VSCMD_ARG_TGT_ARCH')
-        if target_arch != 'x64':
-            WINDOWS_BLACKLIST.append('cpp_extensions_aot')
-            WINDOWS_BLACKLIST.append('cpp_extensions_aot_no_ninja')
-            WINDOWS_BLACKLIST.append('cpp_extensions_jit')
-            WINDOWS_BLACKLIST.append('jit')
-            WINDOWS_BLACKLIST.append('jit_fuser')
-
-        selected_tests = exclude_tests(WINDOWS_BLACKLIST, selected_tests, 'on Windows')
-
-    elif TEST_WITH_ROCM:
-        selected_tests = exclude_tests(ROCM_BLACKLIST, selected_tests, 'on ROCm')
-
     return selected_tests
+
+
+CUSTOM_HANDLERS = {
+    # 'test_utils': test_utils
+    'test_cuda_primary_ctx': test_cuda_primary_ctx,
+    # 'test_cpp_extensions_aot': test_cpp_extensions_aot,
+    # 'test_cpp_extensions_aot_no_ninja': test_cpp_extensions_aot_no_ninja,
+    # 'distributed/test_distributed': test_distributed,
+}
 
 
 def main():
