@@ -2,7 +2,7 @@ Pcap parser
 ===============================
 
 **Deployment & Documentation & Stats**
-
+![image](https://img.shields.io/badge/p2parser-0.0.1-brightgreen)
 .. image:: https://img.shields.io/badge/p2parser-0.0.1-brightgreen
 
 .. image:: https://img.shields.io/pypi/v/p2parser.svg?color=brightgreen
